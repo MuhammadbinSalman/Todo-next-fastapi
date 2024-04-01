@@ -1,63 +1,41 @@
-'use client'
-import {Input} from "@/components/ui/input"
-import React, { useState } from 'react'
-import { TodoTasks } from "./TodoTasks"
+import { Input } from "@/components/ui/input"
+import React, { useEffect, useState } from 'react'
+import AddTodoTasks from "./AddTodoTasks"
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { ClipboardPen, Trash } from "lucide-react"
 
 
-// const getData:any = async () => {
-//   try {
-//     const response = await fetch('http://localhost:8000/todo');
-//     if (!response.ok) {
-//       throw new Error('Failed to fetch todo');
-//     }
-//     const todoData: any = await response.json();
-//     return todoData;
-//   } catch (error) {
-//     console.log('Error fetching todo:', error);
-//   }
-// }
 
-async function TodoSection(){
-  const [todoName, setTodoName] = useState({task:""});
-  console.log(todoName, "🤡🤡")
-  //const todoData = await getData();
-  //const completedTodos: any = todoData.filter((todo: any) => todo.completed);
-
-  // break
-  // const handleSubmit = async (e: any) => {
-  //   e.preventDefault();
-  //   try {
-  //     const response = await fetch('http://localhost:8000/todo/add', {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: JSON.stringify({
-  //         name: "fromTodo",
-  //         description: 'bring carrots', // You can customize this
-  //         completed: false,
-  //       }),
-  //     });
-  //   if (response.ok) {
-  //     // Handle success (e.g., show a success message)
-  //     console.log('Todo added successfully!');
-  //     // Clear the input field
-  //     // setTodoName('');
-  //     // Trigger a function to refresh the todo list
-  //     // addTodo();
-  //   } else {
-  //     // Handle error (e.g., show an error message)
-  //     console.error('Error adding todo:', response.statusText);
-  //   }
-  // } catch (error) {
-  //   console.error('Error adding todo:', error);
-  // }
+const TodoSection = async () => {
+  const [todo, setTodo] = useState([]);
+  // useEffect(() => {
+    async function fetchTodo(){
+      
+      const response: any = await fetch('http://localhost:8000/api/todo', {
+        method: "get",
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      })
+      if (!response.ok) {
+        throw new Error('Fail hogya fetch todo');
+      }
+      const todoData: any = await response.json();
+      setTodo(todoData);
+      // return todoData;
+      
+      // })
+    }
+  console.log(todo, "TODO HERER")
+  const todoData = await fetchTodo();
+  console.log(todoData, "todo data here");
+  
+  const completedTodos: any = await todo?.filter((todo: any) => todo.completed);
   return (
     <main className='px-24 mb-10'>
       <div className='h-[230px] w-[440px] rounded-[39px] border-2 border-[#766e5f] mx-auto flex justify-between px-14 gap-3 items-center'>
@@ -66,26 +44,53 @@ async function TodoSection(){
         </div>
         <div className='rounded-full h-36 w-36 bg-[#ff5631] flex items-center justify-center'>
           <h3 className='text-[#0f0e0c] font-[1000] text-4xl'>
-            {/* {completedTodos.length} / {todoData.length} */}
+            {/* {completedTodos?.length} / {todoData?.length} */}
           </h3>
         </div>
       </div>
-      <div className='flex items-center mt-9 justify-center gap-3'>
-        <input onChange={(e) => setTodoName({task: e.target.value})} placeholder="Write your next task" className="border-none placeholder:text-[#70685c] text-[#e6d4b7] bg-[#1e1e1e] rounded-xl max-w-[360px]" />
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger>
-              <button className="rounded-full h-9 cursor-pointer w-9 bg-[#ff5631] flex justify-center items-center font-extrabold">+</button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p className="text-[#e6d4b7]">Add a new task</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+      <AddTodoTasks />
+      <div className='mt-10 w-full mx-auto flex flex-col items-center justify-center gap-6 max-w-[440px]'>
+        {todo?.map((task: any) => {
+          return (
+            <div id='task' className="bg-[#1e1e1e] pr-7 h-16 border-2 border-[#766e5f] flex justify-between px-6 rounded-xl w-[440px]">
+              <div className="flex items-center justify-center gap-3">
+                <div className={`${task.completed === false ? 'border-[#ff5631] h-7 w-7 rounded-full border-2 ' : 'border-[#57cb4c] bg-[#57cb4c] h-7 w-7 rounded-full border-2'}`}></div>
+                <h1 className={`${task.completed ? 'line-through' : ''} text-[#e6d4b7] text-[20px] font-extrabold`}>{task.name}</h1>
+              </div>
+              <div className="flex justify-center items-center gap-3">
+                <ClipboardPen size={30} className="icon-hover text-[#9f9480] " />
+                <Trash size={30} className="icon-hover text-[#9f9480] " />
+              </div>
+            </div>
+          )
+        })}
       </div>
-      {/* <TodoTasks tasks={todoData} /> */}
     </main>
   )
 }
 
 export default TodoSection;
+
+
+
+
+
+
+
+
+
+
+
+// const handleSubmit = async () => {
+//   if (task.task) {
+//     const res = await fetch("http://127.0.0.1:3000/todo/add", {
+//       method: "POST",
+//       body: JSON.stringify({
+//         name: task.task,
+//         description: "kuch nhi",
+//         completed: false
+//       })
+//     })
+//     console.log(res.ok)
+//   }
+// }

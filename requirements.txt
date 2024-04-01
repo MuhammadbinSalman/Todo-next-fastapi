@@ -3,3 +3,4 @@ uvicorn[standard]==0.23.2
 requests
 python-dotenv
 sqlmodel
+// "pip3 install -r requirements.txt && python3 -m uvicorn api.index:app --reload",
